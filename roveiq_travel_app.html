@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --saffron: #E8660A;
+    --saffron-light: #FFF0E6;
+    --saffron-dark: #B84E05;
+    --asphalt: #1A1A1F;
+    --asphalt-2: #26262D;
+    --asphalt-3: #32323C;
+    --dust: #F5F2EE;
+    --mist: #E8E4DD;
+    --text-on-dark: #F0EDE8;
+    --text-muted: #8A8790;
+    --green: #2D9B5E;
+    --green-light: #E6F7EE;
+    --blue: #1A6FBD;
+    --blue-light: #E6F0FB;
+    --red: #D93E3E;
+    --red-light: #FBEAEA;
+    --amber: #C88A10;
+    --amber-light: #FEF5E2;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--asphalt);
+    color: var(--text-on-dark);
+    min-height: 600px;
+    overflow: hidden;
+  }
+
+  .app-shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    grid-template-rows: 56px 1fr;
+    height: 620px;
+    background: var(--asphalt);
+  }
+
+  .topbar {
+    grid-column: 1 / -1;
+    background: var(--asphalt-2);
+    border-bottom: 1px solid var(--asphalt-3);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+    color: var(--saffron);
+  }
+
+  .logo span { color: var(--text-on-dark); }
+
+  .topbar-route {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--asphalt-3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .route-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--saffron);
+  }
+
+  .topbar-user {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--saffron), var(--saffron-dark));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: white;
+    margin-left: 8px; cursor: pointer;
+  }
+
+  .sidebar {
+    background: var(--asphalt-2);
+    border-right: 1px solid var(--asphalt-3);
+    padding: 16px 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    padding: 0 12px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 8px 8px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover { background: var(--asphalt-3); color: var(--text-on-dark); }
+  .nav-item.active { background: var(--saffron); color: white; }
+  .nav-item.active .nav-icon { color: white; }
+
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .badge {
+    margin-left: auto;
+    background: var(--saffron);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 2px 6px;
+  }
+
+  .badge.green { background: var(--green); }
+
+  .main {
+    overflow-y: auto;
+    padding: 0;
+    background: var(--asphalt);
+  }
+
+  .panel { display: none; padding: 20px; }
+  .panel.active { display: block; }
+
+
+  .greeting {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .greeting-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--asphalt-2);
+    border: 1px solid var(--asphalt-3);
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .stat-value.saffron { color: var(--saffron); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.blue { color: #4A9FE8; }
+  .stat-value.amber { color: #E8B830; }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  .card {
+    background: var(--asphalt-2);
+    border: 1px solid var(--asphalt-3);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+
+  .map-mock {
+    background: #1E2530;
+    border-radius: 10px;
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px;
+    border: 1px solid #2A3040;
+  }
+
+  .map-road {
+    position: absolute;
+    background: #2A3A52;
+    left: 50%; top: 0; bottom: 0;
+    width: 34px;
+    transform: translateX(-50%);
+    border-left: 1px dashed #3A5075;
+    border-right: 1px dashed #3A5075;
+  }
+
+  .map-road-h {
+    position: absolute;
+    background: #2A3A52;
+    top: 55%; left: 0; right: 0;
+    height: 30px;
+    transform: translateY(-50%);
+  }
+
+  .map-pin {
+    position: absolute;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+
+  .map-radius {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed rgba(232,102,10,0.5);
+    background: rgba(232,102,10,0.05);
+  }
+
+  .map-label {
+    position: absolute;
+    font-size: 9px;
+    color: #7090B0;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .alert-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    background: var(--asphalt-3);
+  }
+
+  .alert-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .alert-dot.red { background: var(--red); }
+  .alert-dot.amber { background: #E8B830; }
+  .alert-dot.green { background: var(--green); }
+
+  .alert-time { font-size: 10px; color: var(--text-muted); margin-left: auto; }
+
+  .lap-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--asphalt-3);
+    font-size: 12.5px;
+  }
+
+  .lap-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--asphalt-3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+
+  .lap-num.done { background: var(--green); color: white; }
+  .lap-num.active { background: var(--saffron); color: white; }
+
+  .lap-info { flex: 1; }
+  .lap-place { font-weight: 500; color: var(--text-on-dark); }
+  .lap-detail { font-size: 11px; color: var(--text-muted); }
+  .lap-km { font-size: 11px; color: var(--text-muted); text-align: right; }
+
+
+  .route-input-row {
+    display: flex; gap: 10px; align-items: center; margin-bottom: 16px;
+  }
+
+  .route-input {
+    flex: 1;
+    background: var(--asphalt-2);
+    border: 1px solid var(--asphalt-3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-on-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    outline: none;
+  }
+
+  .route-input:focus { border-color: var(--saffron); }
+
+  .btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+
+  .btn-primary { background: var(--saffron); color: white; }
+  .btn-primary:hover { background: var(--saffron-dark); }
+  .btn-ghost {
+    background: var(--asphalt-2);
+    color: var(--text-on-dark);
+    border: 1px solid var(--asphalt-3);
+  }
+  .btn-ghost:hover { background: var(--asphalt-3); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  .fuel-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: var(--asphalt-3);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 12.5px;
+  }
+
+  .fuel-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .fuel-icon.petrol { background: var(--amber-light); }
+  .fuel-icon.ev { background: var(--green-light); }
+
+  .fuel-price {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    margin-left: auto;
+    color: var(--saffron);
+  }
+
+  .sos-fab {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--red);
+    border: 3px solid rgba(255,255,255,0.3);
+    color: white;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    box-shadow: 0 0 0 0 rgba(217, 62, 62, 0.4);
+    animation: pulse-sos 2s infinite;
+    z-index: 100;
+    transition: transform 0.15s;
+  }
+
+  .sos-fab:hover { transform: scale(1.1); }
+
+  @keyframes pulse-sos {
+    0% { box-shadow: 0 0 0 0 rgba(217,62,62,0.4); }
+    70% { box-shadow: 0 0 0 12px rgba(217,62,62,0); }
+    100% { box-shadow: 0 0 0 0 rgba(217,62,62,0); }
+  }
+
+
+  .hero-bar {
+    background: linear-gradient(90deg, #1A1A0D 0%, #2A1E05 100%);
+    border: 1px solid #4A3A10;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .points-circle {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--amber);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .points-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #E8B830;
+  }
+
+  .points-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; }
+
+  .xp-bar {
+    flex: 1;
+  }
+
+  .xp-track {
+    height: 6px;
+    background: var(--asphalt-3);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber), var(--saffron));
+    border-radius: 3px;
+    width: 68%;
+    transition: width 0.4s;
+  }
+
+  .reward-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px;
+    background: var(--asphalt-2);
+    border: 1px solid var(--asphalt-3);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 12.5px;
+  }
+
+  .reward-icon {
+    font-size: 20px;
+    width: 36px; height: 36px;
+    background: var(--asphalt-3);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .reward-cost {
+    margin-left: auto;
+    font-size: 11px;
+    color: #E8B830;
+    font-weight: 700;
+  }
+
+  
+  .convoy-member {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    background: var(--asphalt-3);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+  }
+
+  .member-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-left: auto;
+  }
+
+  .status-dot.ok { background: var(--green); }
+  .status-dot.lag { background: #E8B830; }
+  .status-dot.sos { background: var(--red); animation: pulse-sos 1s infinite; }
+
+
+  .expense-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--asphalt-3);
+    font-size: 12.5px;
+  }
+
+  .expense-cat {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  .tag.green { background: var(--green-light); color: #1E7A48; }
+  .tag.amber { background: var(--amber-light); color: #8A5F05; }
+  .tag.blue { background: var(--blue-light); color: var(--blue); }
+  .tag.red { background: var(--red-light); color: #A02A2A; }
+  .tag.saffron { background: var(--saffron-light); color: var(--saffron-dark); }
+
+
+  .gem-pin {
+    display: flex; gap: 10px; margin-bottom: 12px;
+  }
+
+  .gem-type {
+    flex: 1; padding: 10px;
+    background: var(--asphalt-3);
+    border: 1px solid var(--asphalt-3);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+
+  .gem-type:hover, .gem-type.selected {
+    border-color: var(--saffron);
+    color: var(--saffron);
+    background: var(--saffron-light);
+  }
+
+  .gem-type .type-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+
+
+  .prof-chips {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+  }
+
+  .chip {
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12.5px;
+    border: 1px solid var(--asphalt-3);
+    background: var(--asphalt-2);
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+
+  .chip:hover { border-color: var(--saffron); color: var(--saffron); }
+  .chip.selected { background: var(--saffron); border-color: var(--saffron); color: white; }
+
+  .prog-item {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .prog-label { font-size: 12px; color: var(--text-muted); width: 90px; flex-shrink: 0; }
+
+  .prog-track {
+    flex: 1; height: 5px;
+    background: var(--asphalt-3);
+    border-radius: 3px; overflow: hidden;
+  }
+
+  .prog-fill { height: 100%; border-radius: 3px; }
+
+  .divider { border: none; border-top: 1px solid var(--asphalt-3); margin: 14px 0; }
+
+
+  @keyframes pop-in {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+</style>
+
+</head>
+<body>
+  <div class="app-shell">
+  
+  <div class="topbar">
+    <div class="logo">Travel<span>Wings</span></div>
+    <div class="topbar-route">
+      <div class="route-dot"></div>
+      <span>Nawanshahr → Delhi</span>
+      <span style="color:var(--text-on-dark);">· 432 km</span>
+    </div>
+    <div class="topbar-user">AK</div>
+  </div>
+
+
+  <div class="sidebar">
+    <div class="sidebar-label" style="padding-left:20px;">Main</div>
+    <div class="sidebar-section">
+      <button class="nav-item active" onclick="showPanel('dashboard')">
+        <span class="nav-icon">◈</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="showPanel('route')">
+        <span class="nav-icon">↗</span> Route Planner
+      </button>
+      <button class="nav-item" onclick="showPanel('logbook')">
+        <span class="nav-icon">⊟</span> Logbook
+        <span class="badge">3</span>
+      </button>
+      <button class="nav-item" onclick="showPanel('convoy')">
+        <span class="nav-icon">⊕</span> Convoy Sync
+        <span class="badge green">Live</span>
+      </button>
+    </div>
+    <div class="sidebar-label" style="padding-left:20px; margin-top:8px;">Discover</div>
+    <div class="sidebar-section">
+      <button class="nav-item" onclick="showPanel('gems')">
+        <span class="nav-icon">◆</span> Hidden Gems
+      </button>
+      <button class="nav-item" onclick="showPanel('rewards')">
+        <span class="nav-icon">★</span> Highway Hero
+        <span class="badge" style="background:var(--amber);">340 pts</span>
+      </button>
+    </div>
+    <div class="sidebar-label" style="padding-left:20px; margin-top:8px;">Account</div>
+    <div class="sidebar-section">
+      <button class="nav-item" onclick="showPanel('profile')">
+        <span class="nav-icon">○</span> Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Dashboard -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="greeting">Good morning, Arjun ☀</div>
+      <div class="greeting-sub">Next stop: Ambala Cantt · ETA 2h 15m at current pace</div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Distance covered</div>
+          <div class="stat-value saffron">187</div>
+          <div class="stat-sub">km today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Fuel remaining</div>
+          <div class="stat-value green">62%</div>
+          <div class="stat-sub">~190 km range</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Road alerts nearby</div>
+          <div class="stat-value amber">3</div>
+          <div class="stat-sub">within 10 km</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Trip earnings</div>
+          <div class="stat-value blue">₹2,340</div>
+          <div class="stat-sub">after expenses</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">⬡ 10km Radar</div>
+          <div class="map-mock">
+            <div class="map-road"></div>
+            <div class="map-road-h"></div>
+            <div class="map-radius" style="width:90px;height:90px;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+            <div class="map-pin" style="background:var(--saffron);top:47%;left:48%;"></div>
+            <div class="map-pin" style="background:var(--red);top:28%;left:62%;width:9px;height:9px;border-color:rgba(255,255,255,0.6);"></div>
+            <div class="map-pin" style="background:var(--amber);top:65%;left:35%;width:9px;height:9px;border-color:rgba(255,255,255,0.6);"></div>
+            <div class="map-pin" style="background:#4A9FE8;top:55%;left:68%;width:9px;height:9px;border-color:rgba(255,255,255,0.6);"></div>
+            <div class="map-label" style="top:24%;left:64%;">pothole</div>
+            <div class="map-label" style="top:62%;left:24%;">low light</div>
+            <div class="map-label" style="top:52%;left:71%;">dhaba</div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-dot red"></div>
+            <span>Pothole cluster · NH44 ahead</span>
+            <span class="alert-time">1.2km</span>
+          </div>
+          <div class="alert-item">
+            <div class="alert-dot amber"></div>
+            <span>Poor lighting · bypass road</span>
+            <span class="alert-time">3.8km</span>
+          </div>
+          <div class="alert-item">
+            <div class="alert-dot green"></div>
+            <span>Clear roads ahead</span>
+            <span class="alert-time">8km+</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">↦ Journey Laps</div>
+          <div class="lap-item">
+            <div class="lap-num done">✓</div>
+            <div class="lap-info">
+              <div class="lap-place">Nawanshahr → Ropar</div>
+              <div class="lap-detail">Completed · 45 min rest taken</div>
+            </div>
+            <div class="lap-km">58 km</div>
+          </div>
+          <div class="lap-item">
+            <div class="lap-num active">2</div>
+            <div class="lap-info">
+              <div class="lap-place">Ropar → Ambala</div>
+              <div class="lap-detail" style="color:var(--saffron);">In progress · 89 km remaining</div>
+            </div>
+            <div class="lap-km">129 km</div>
+          </div>
+          <div class="lap-item">
+            <div class="lap-num">3</div>
+            <div class="lap-info">
+              <div class="lap-place">Ambala → Panipat</div>
+              <div class="lap-detail">Rest stop recommended · 1h</div>
+            </div>
+            <div class="lap-km">96 km</div>
+          </div>
+          <div class="lap-item" style="border:none;">
+            <div class="lap-num">4</div>
+            <div class="lap-info">
+              <div class="lap-place">Panipat → Delhi</div>
+              <div class="lap-detail">Final lap · NH44</div>
+            </div>
+            <div class="lap-km">89 km</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Route Planner -->
+    <div class="panel" id="panel-route">
+      <div class="greeting" style="font-size:18px; margin-bottom:4px;">Route Planner</div>
+      <div class="greeting-sub">Fuel-optimized routes with EV & petrol stops</div>
+
+      <div class="route-input-row">
+        <input class="route-input" placeholder="📍 From: Nawanshahr, Punjab" value="Nawanshahr, Punjab" readonly />
+        <input class="route-input" placeholder="🏁 To: Delhi NCR" value="Delhi NCR" readonly />
+        <button class="btn btn-primary">Re-route</button>
+      </div>
+
+      <div class="three-col" style="margin-bottom:16px;">
+        <div class="stat-card">
+          <div class="stat-label">Total distance</div>
+          <div class="stat-value saffron">432</div>
+          <div class="stat-sub">km via NH44</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Est. duration</div>
+          <div class="stat-value blue">7h 20m</div>
+          <div class="stat-sub">incl. 2 rest stops</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Fuel cost est.</div>
+          <div class="stat-value green">₹1,840</div>
+          <div class="stat-sub">Diesel · 52L</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">⛽ Fuel Stations En Route</div>
+          <div class="fuel-row">
+            <div class="fuel-icon petrol">⛽</div>
+            <div>
+              <div style="font-weight:500;">HP Petrol · Ambala</div>
+              <div style="font-size:11px;color:var(--text-muted);">231 km mark · Diesel ✓</div>
+            </div>
+            <div class="fuel-price">₹95.4/L</div>
+          </div>
+          <div class="fuel-row">
+            <div class="fuel-icon petrol">⛽</div>
+            <div>
+              <div style="font-weight:500;">IOCL Pump · Karnal</div>
+              <div style="font-size:11px;color:var(--text-muted);">316 km mark · cheapest</div>
+            </div>
+            <div class="fuel-price" style="color:var(--green);">₹93.1/L</div>
+          </div>
+          <div class="fuel-row">
+            <div class="fuel-icon ev">🔋</div>
+            <div>
+              <div style="font-weight:500;">Tata EV Hub · Panipat</div>
+              <div style="font-size:11px;color:var(--text-muted);">343 km mark · 4 chargers free</div>
+            </div>
+            <div class="fuel-price" style="color:var(--green);">₹18/kWh</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🛌 Suggested Rest Stops</div>
+          <div class="alert-item">
+            <span style="font-size:15px;">☕</span>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">Ambala · after lap 2</div>
+              <div style="font-size:11px;color:var(--text-muted);">4h driving · 45 min recommended</div>
+            </div>
+            <span class="tag saffron" style="margin-left:auto;">231km</span>
+          </div>
+          <div class="alert-item">
+            <span style="font-size:15px;">🍽</span>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">Panipat Dhaba · meal break</div>
+              <div style="font-size:11px;color:var(--text-muted);">6h driving · 1h recommended</div>
+            </div>
+            <span class="tag saffron" style="margin-left:auto;">343km</span>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn btn-ghost btn-sm" style="width:100%;">⬇ Download offline map</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logbook -->
+    <div class="panel" id="panel-logbook">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <div class="greeting" style="font-size:18px;">Trip Logbook</div>
+          <div class="greeting-sub">Nawanshahr → Delhi · Apr 25, 2026</div>
+        </div>
+        <button class="btn btn-primary btn-sm">+ Add entry</button>
+      </div>
+
+      <div class="three-col" style="margin-bottom:16px;">
+        <div class="stat-card">
+          <div class="stat-label">Fuel spent</div>
+          <div class="stat-value saffron">₹1,240</div>
+          <div class="stat-sub">38L diesel</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tolls paid</div>
+          <div class="stat-value amber">₹310</div>
+          <div class="stat-sub">3 toll plazas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Misc expenses</div>
+          <div class="stat-value blue">₹180</div>
+          <div class="stat-sub">food + chai</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Expense Entries</div>
+        <div class="expense-row">
+          <div class="expense-cat" style="background:var(--amber-light);">⛽</div>
+          <div style="flex:1;">
+            <div style="font-weight:500;font-size:12.5px;">Fuel fill-up · Ropar HP pump</div>
+            <div style="font-size:11px;color:var(--text-muted);">09:14 AM · 20L @ ₹95.4</div>
+          </div>
+          <span class="tag amber">Fuel</span>
+          <div style="font-weight:700;margin-left:12px;">₹908</div>
+        </div>
+        <div class="expense-row">
+          <div class="expense-cat" style="background:var(--saffron-light);">🛣</div>
+          <div style="flex:1;">
+            <div style="font-weight:500;font-size:12.5px;">Toll · Ropar bypass plaza</div>
+            <div style="font-size:11px;color:var(--text-muted);">09:48 AM · FASTag deducted</div>
+          </div>
+          <span class="tag saffron">Toll</span>
+          <div style="font-weight:700;margin-left:12px;">₹95</div>
+        </div>
+        <div class="expense-row">
+          <div class="expense-cat" style="background:var(--blue-light);">☕</div>
+          <div style="flex:1;">
+            <div style="font-weight:500;font-size:12.5px;">Dhaba break · Morinda</div>
+            <div style="font-size:11px;color:var(--text-muted);">10:30 AM · tea + paratha</div>
+          </div>
+          <span class="tag blue">Meal</span>
+          <div style="font-weight:700;margin-left:12px;">₹120</div>
+        </div>
+        <div class="expense-row" style="border:none;">
+          <div class="expense-cat" style="background:var(--amber-light);">⛽</div>
+          <div style="flex:1;">
+            <div style="font-weight:500;font-size:12.5px;">Fuel fill-up · Ambala IOCL</div>
+            <div style="font-size:11px;color:var(--text-muted);">12:20 PM · 18L @ ₹93.1</div>
+          </div>
+          <span class="tag amber">Fuel</span>
+          <div style="font-weight:700;margin-left:12px;">₹676</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Convoy -->
+    <div class="panel" id="panel-convoy">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <div class="greeting" style="font-size:18px;">Convoy Sync</div>
+          <div class="greeting-sub">Room: <span style="color:var(--saffron);">KTM-SQUAD-4491</span> · 5 riders</div>
+        </div>
+        <button class="btn btn-ghost btn-sm">Share room</button>
+      </div>
+
+      <div class="two-col" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-title">👥 Live Positions</div>
+          <div class="convoy-member">
+            <div class="member-avatar" style="background:#2D4A1A;color:#7AD44A;">AK</div>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">You (Arjun K.)</div>
+              <div style="font-size:11px;color:var(--text-muted);">Lead · 187km covered</div>
+            </div>
+            <div class="status-dot ok"></div>
+          </div>
+          <div class="convoy-member">
+            <div class="member-avatar" style="background:#1A2F4A;color:#4A9FE8;">RS</div>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">Rahul S.</div>
+              <div style="font-size:11px;color:var(--text-muted);">2.4km behind · on track</div>
+            </div>
+            <div class="status-dot ok"></div>
+          </div>
+          <div class="convoy-member">
+            <div class="member-avatar" style="background:#3A1A3A;color:#D07AE8;">PV</div>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">Priya V.</div>
+              <div style="font-size:11px;color:var(--text-muted);">8.1km behind · slowing</div>
+            </div>
+            <div class="status-dot lag"></div>
+          </div>
+          <div class="convoy-member">
+            <div class="member-avatar" style="background:#3A2A1A;color:#E8A830;">MK</div>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">Manish K.</div>
+              <div style="font-size:11px;color:var(--text-muted);">Stopped · tyre issue</div>
+            </div>
+            <div class="status-dot sos"></div>
+          </div>
+          <div style="margin-top:12px;padding:8px;background:var(--red-light);border-radius:8px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:var(--red);font-weight:600;">⚠ Manish has stopped — 14km behind</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📡 Group Chat</div>
+          <div style="background:var(--asphalt-3);border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;">
+            <span style="color:var(--saffron);font-weight:600;">Rahul S.</span>
+            <span style="color:var(--text-muted);"> · 10:32</span>
+            <div style="margin-top:3px;color:var(--text-on-dark);">Taking chai break at Morinda — 10 min</div>
+          </div>
+          <div style="background:var(--asphalt-3);border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;">
+            <span style="color:#D07AE8;font-weight:600;">Priya V.</span>
+            <span style="color:var(--text-muted);"> · 11:14</span>
+            <div style="margin-top:3px;color:var(--text-on-dark);">Low on fuel, stopping at HP pump</div>
+          </div>
+          <div style="background:rgba(217,62,62,0.12);border:1px solid rgba(217,62,62,0.3);border-radius:8px;padding:10px;font-size:12px;">
+            <span style="color:var(--red);font-weight:600;">🚨 Manish K.</span>
+            <span style="color:var(--text-muted);"> · 11:41</span>
+            <div style="margin-top:3px;color:var(--text-on-dark);">Flat tyre! Need help — Ropar bypass</div>
+          </div>
+          <button class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;" onclick="sendPrompt('Find a motorcycle tyre repair shop near Ropar bypass for a convoy member stuck there')">Find help for Manish ↗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden Gems -->
+    <div class="panel" id="panel-gems">
+      <div class="greeting" style="font-size:18px; margin-bottom:4px;">Hidden Gems</div>
+      <div class="greeting-sub">Community-powered spots along your route</div>
+
+      <div class="two-col" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-title">📍 Drop a Pin</div>
+          <div class="gem-pin">
+            <div class="gem-type selected" onclick="selectGem(this)">
+              <span class="type-icon">🏞</span>Scenic spot
+            </div>
+            <div class="gem-type" onclick="selectGem(this)">
+              <span class="type-icon">🚿</span>Clean stop
+            </div>
+            <div class="gem-type" onclick="selectGem(this)">
+              <span class="type-icon">🍛</span>Good dhaba
+            </div>
+            <div class="gem-type" onclick="selectGem(this)">
+              <span class="type-icon">⚡</span>EV-friendly
+            </div>
+          </div>
+          <textarea class="route-input" style="height:70px;resize:none;" placeholder="Describe this spot — what makes it worth visiting?"></textarea>
+          <button class="btn btn-primary" style="width:100%;margin-top:10px;">Share with community</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⭐ Nearby Gems</div>
+          <div class="alert-item" style="margin-bottom:8px;">
+            <span style="font-size:16px;">🏞</span>
+            <div style="flex:1;">
+              <div style="font-weight:500;font-size:12.5px;">Gobind Sagar viewpoint</div>
+              <div style="font-size:11px;color:var(--text-muted);">4.2km off NH · sunrise best</div>
+            </div>
+            <span class="tag green">6.8mi</span>
+          </div>
+          <div class="alert-item" style="margin-bottom:8px;">
+            <span style="font-size:16px;">🍛</span>
+            <div style="flex:1;">
+              <div style="font-weight:500;font-size:12.5px;">Harpreet da Dhaba</div>
+              <div style="font-size:11px;color:var(--text-muted);">Ambala · legendary sarson da saag</div>
+            </div>
+            <span class="tag saffron">2.1km</span>
+          </div>
+          <div class="alert-item">
+            <span style="font-size:16px;">🚿</span>
+            <div style="flex:1;">
+              <div style="font-weight:500;font-size:12.5px;">Clean rest area · Karnal toll</div>
+              <div style="font-size:11px;color:var(--text-muted);">Community verified · 94% approve</div>
+            </div>
+            <span class="tag blue">onroute</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Highway Hero Rewards -->
+    <div class="panel" id="panel-rewards">
+      <div class="greeting" style="font-size:18px; margin-bottom:4px;">Highway Hero</div>
+      <div class="greeting-sub">Earn points · Redeem at dhabas & motels</div>
+
+      <div class="hero-bar">
+        <div class="points-circle">
+          <div class="points-num">340</div>
+          <div class="points-label">points</div>
+        </div>
+        <div class="xp-bar">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;font-weight:600;color:#E8B830;">Silver Rider</span>
+            <span style="font-size:11px;color:var(--text-muted);">160 pts to Gold</span>
+          </div>
+          <div class="xp-track"><div class="xp-fill"></div></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">340 / 500 pts for Gold Rider</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">🏷 Redeem Rewards</div>
+          <div class="reward-item">
+            <div class="reward-icon">☕</div>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">Free chai · any partner dhaba</div>
+              <div style="font-size:11px;color:var(--text-muted);">Valid for 72h</div>
+            </div>
+            <div class="reward-cost">50 pts</div>
+          </div>
+          <div class="reward-item">
+            <div class="reward-icon">⛽</div>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">₹30 off fuel fill-up</div>
+              <div style="font-size:11px;color:var(--text-muted);">HP & IOCL pumps</div>
+            </div>
+            <div class="reward-cost">120 pts</div>
+          </div>
+          <div class="reward-item">
+            <div class="reward-icon">🛏</div>
+            <div>
+              <div style="font-weight:500;font-size:12.5px;">Free night · Highway Nest</div>
+              <div style="font-size:11px;color:var(--text-muted);">Budget motel chain</div>
+            </div>
+            <div class="reward-cost">400 pts</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 Your Contributions</div>
+          <div class="prog-item">
+            <div class="prog-label">Hazards reported</div>
+            <div class="prog-track"><div class="prog-fill" style="width:70%;background:var(--saffron);"></div></div>
+            <span style="font-size:12px;margin-left:8px;color:var(--text-on-dark);">14</span>
+          </div>
+          <div class="prog-item">
+            <div class="prog-label">Gems shared</div>
+            <div class="prog-track"><div class="prog-fill" style="width:40%;background:#4A9FE8;"></div></div>
+            <span style="font-size:12px;margin-left:8px;color:var(--text-on-dark);">8</span>
+          </div>
+          <div class="prog-item">
+            <div class="prog-label">Helpful ratings</div>
+            <div class="prog-track"><div class="prog-fill" style="width:85%;background:var(--green);"></div></div>
+            <span style="font-size:12px;margin-left:8px;color:var(--text-on-dark);">41</span>
+          </div>
+          <hr class="divider" />
+          <button class="btn btn-primary btn-sm" style="width:100%;" onclick="sendPrompt('How do I earn more Highway Hero points quickly on a Delhi trip?')">How to earn faster ↗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile -->
+    <div class="panel" id="panel-profile">
+      <div class="greeting" style="font-size:18px;margin-bottom:4px;">My Profile</div>
+      <div class="greeting-sub">Customize your experience by role & hobbies</div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">👤 Arjun Kumar</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+            <div style="width:52px;height:52px;border-radius:50%;background:var(--saffron);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:white;">AK</div>
+            <div>
+              <div style="font-weight:600;font-size:15px;">Arjun Kumar</div>
+              <div style="font-size:12px;color:var(--text-muted);">@arjunrides · Nawanshahr, PB</div>
+            </div>
+          </div>
+          <div class="card-title" style="font-size:12px;margin-bottom:8px;">Profession</div>
+          <div class="prof-chips">
+            <div class="chip selected">🚛 Trucker</div>
+            <div class="chip" onclick="toggleChip(this)">🏍 Biker</div>
+            <div class="chip" onclick="toggleChip(this)">🚕 Cab Driver</div>
+            <div class="chip" onclick="toggleChip(this)">🎓 Student</div>
+            <div class="chip" onclick="toggleChip(this)">✈ Traveler</div>
+          </div>
+          <div class="card-title" style="font-size:12px;margin-bottom:8px;">Vehicle</div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <select class="route-input" style="flex:1;">
+              <option>Diesel</option><option>Petrol</option><option>EV</option>
+            </select>
+            <input class="route-input" style="flex:1;" placeholder="Tank: 80L" value="Tank: 80L" />
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎯 Hobbies & Interests</div>
+          <div class="prof-chips">
+            <div class="chip selected">🏔 Adventure</div>
+            <div class="chip selected">📸 Photography</div>
+            <div class="chip" onclick="toggleChip(this)">🍽 Food trails</div>
+            <div class="chip" onclick="toggleChip(this)">🎵 Music</div>
+            <div class="chip" onclick="toggleChip(this)">🏕 Camping</div>
+            <div class="chip" onclick="toggleChip(this)">🌿 Nature</div>
+          </div>
+          <div class="card-title" style="font-size:12px;margin-bottom:8px;margin-top:4px;">Emergency Contacts</div>
+          <div class="alert-item">
+            <span>📞</span>
+            <div style="flex:1;">
+              <div style="font-weight:500;font-size:12px;">Suresh Kumar (Father)</div>
+              <div style="font-size:11px;color:var(--text-muted);">+91 98765 43210</div>
+            </div>
+            <span class="tag green">SOS</span>
+          </div>
+          <button class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;">Save profile</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SOS Button -->
+<button class="sos-fab" onclick="triggerSOS()">SOS</button>
+
+<script>
+  function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const items = document.querySelectorAll('.nav-item');
+    items.forEach(item => {
+      if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(id)) {
+        item.classList.add('active');
+      }
+    });
+  }
+
+  function selectGem(el) {
+    document.querySelectorAll('.gem-type').forEach(g => g.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleChip(el) {
+    el.classList.toggle('selected');
+  }
+
+  function triggerSOS() {
+    const btn = document.querySelector('.sos-fab');
+    btn.style.background = '#fff';
+    btn.style.color = 'var(--red)';
+    btn.textContent = '📡';
+    setTimeout(() => {
+      btn.style.background = 'var(--red)';
+      btn.style.color = 'white';
+      btn.textContent = 'SOS';
+    }, 2000);
+    sendPrompt('SOS triggered — what happens when I press the TravelWings SOS beacon button?');
+  }
+</script>
+
+</body>
+</html>
+
